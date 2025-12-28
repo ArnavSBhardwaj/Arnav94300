@@ -17,25 +17,28 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const recognition = useMemo(() => {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return null;
-    const r = new SR();
-    r.lang = "en-US"; // <-- CHANGE to "de-DE" for German
-    r.interimResults = true;
-    r.continuous = false;
-    return r;
-  }, []);
+    const recognition = useMemo(() => {
+  if (typeof window === "undefined") return null;
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return null;
+  const r = new SR();
+  r.lang = "en-US"; // or "de-DE"
+  r.interimResults = true;
+  r.continuous = false;
+  return r;
+}, []);
 
   const spokenOnceRef = useRef(false);
 
-  function speak(text: string) {
-    if (!("speechSynthesis" in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.rate = 1;
-    u.pitch = 1;
-    window.speechSynthesis.speak(u);
-  }
+function speak(text: string) {
+  if (typeof window === "undefined") return;
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.rate = 1;
+  u.pitch = 1;
+  window.speechSynthesis.speak(u);
+}
 
   async function ask(question: string) {
     setLoading(true);
